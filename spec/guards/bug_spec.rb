@@ -108,16 +108,16 @@ describe Object, "#ruby_bug" do
     ScratchPad.clear
   end
 
-  it "yields when #match? returns false" do
+  it "does not yield when #match? returns false" do
     @guard.stub!(:match?).and_return(false)
     ruby_bug("#1234", "1.8.6") { ScratchPad.record :yield }
-    ScratchPad.recorded.should == :yield
+    ScratchPad.recorded.should_not == :yield
   end
 
-  it "does not yield when #match? returns true" do
+  it "yields when #match? returns true" do
     @guard.stub!(:match?).and_return(true)
     ruby_bug("#1234", "1.8.6") { ScratchPad.record :yield }
-    ScratchPad.recorded.should_not == :yield
+    ScratchPad.recorded.should == :yield
   end
 
   it "requires a bug tracker number and a version number" do
@@ -131,9 +131,10 @@ describe Object, "#ruby_bug" do
   end
 
   it "calls #unregister even when an exception is raised in the guard block" do
+    @guard.stub!(:match?).and_return(true)
     @guard.should_receive(:unregister)
     lambda do
-      ruby_bug("", "") { raise Exception }
+      ruby_bug("#1234", "1.8.6") { raise Exception }
     end.should raise_error(Exception)
   end
 end

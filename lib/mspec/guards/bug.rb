@@ -17,7 +17,7 @@ class Object
   def ruby_bug(bug, version)
     g = BugGuard.new bug, version
     g.name = :ruby_bug
-    yield if g.yield? true
+    yield if g.yield?
   ensure
     g.unregister
   end

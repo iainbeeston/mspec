@@ -77,6 +77,22 @@ module MSpec
     end
   end
 
+  def self.isolate(max_time=3, &block)
+    if Process.respond_to?(:fork) && child = Process.fork
+      begin
+        timeout(max_time) do
+          Process.wait(child)
+          child = nil
+        end
+      ensure
+        Process.kill(:INT, child) if child
+      end
+    else
+      block.call
+      exit 0
+    end
+  end
+
   # Guards can be nested, so a stack is necessary to know when we have
   # exited the toplevel guard.
   def self.guard

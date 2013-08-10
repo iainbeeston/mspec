@@ -205,7 +205,10 @@ class ContextState
             if protect "before :each", pre(:each)
               MSpec.clear_expectations
               if example
-                passed = protect nil, example
+                passed = false
+                MSpec.isolate do
+                  passed = protect nil, example
+                end
                 MSpec.actions :example, state, example
                 protect nil, @expectation_missing unless MSpec.expectation? or not passed
               end
